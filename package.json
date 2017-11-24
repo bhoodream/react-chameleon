@@ -6,11 +6,19 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhoodream/react-chameleon.git"
+  },
   "keywords": [
     "react",
     "colors",
     "images"
   ],
   "author": "Vadim Fedorov",
-  "license": "ISC"
+  "license": "ISC",
+  "peerDependencies": {
+    "react-dom": ">15.0.1",
+    "react": ">15.0.1"
+  }
 }
