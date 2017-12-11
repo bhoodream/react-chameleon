@@ -11,13 +11,17 @@ const ReactChameleon = WrappedComponent => {
             const colors = parseImageColors(img);
 
             this.state = {
+                img,
                 colors
             }
         }
         render() {
-            return <WrappedComponent
-                {...this.props}
-            />;
+            return (<div>
+                <img src={this.state.img} />
+                <WrappedComponent
+                    {...this.props}
+                />
+            </div>);
         }
     };
 };
