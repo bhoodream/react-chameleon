@@ -1,45 +1,56 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
+import { CANVAS_SIDE } from "./Const";
+
 class CanvasController extends PureComponent {
     static propTypes = {
         sideSize: PropTypes.number,
         imgElem: PropTypes.instanceOf(Element).isRequired,
-        onDraw: PropTypes.func
+        onImageData: PropTypes.func
     };
 
     static defaultProps = {
-        sideSize: 400,
+        sideSize: CANVAS_SIDE,
         imgElem: null,
-        onDraw: () => {}
+        onImageData: () => {}
     };
 
     componentDidMount() {
-        this.drawImage();
+        this.getImageData();
     }
 
     getCanvasSideSizes({ width, height }) {
         const { sideSize } = this.props;
-        const widthIsBigger = Math.max(width, height) === width;
-        const sides = {};
+        const widthIsBigger = width > height;
 
-        sides.width = widthIsBigger ? sideSize : width * (sideSize / height);
-        sides.height = widthIsBigger ? height * (sideSize / width) : sideSize;
-
-        return sides;
+        return {
+            width: widthIsBigger ? sideSize : width * (sideSize / height),
+            height: widthIsBigger ? height * (sideSize / width) : sideSize
+        };
     }
 
-    drawImage() {
+    getImageData() {
         const {
-            imgElem
+            imgElem,
+            onImageData
         } = this.props;
         const { width, height } = this.getCanvasSideSizes(imgElem || {});
         const ctx = this.canvas.getContext("2d");
+        let imageData = [];
 
         this.canvas = Object.assign(this.canvas, { width, height });
 
         ctx.clearRect(0, 0, width, height);
         ctx.drawImage(imgElem, 0, 0, width, height);
+
+        try {
+            imageData = ctx.getImageData(0, 0, width, height).data;
+        } catch (e) {
+            console.error('CanvasController: catch error on getImageData!', e);
+        }
+
+        onImageData(imageData);
     }
 
     render() {

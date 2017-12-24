@@ -5,13 +5,15 @@ import { getDisplayName } from './src/util';
 
 const ReactChameleon = WrappedComponent => {
     class ReactChameleon extends PureComponent {
-        // constructor(...args) {
-        //     super(...args);
-        // }
+        state = {};
+
+        constructor(...args) {
+            super(...args);
+
+            this.onColorsParsed = this.onColorsParsed.bind(this);
+        }
 
         onColorsParsed(colors) {
-            console.log(colors);
-
             this.setState({
                 colors
             })
@@ -22,11 +24,17 @@ const ReactChameleon = WrappedComponent => {
                 img,
                 children
             } = this.props;
+            const {
+                colors
+            } = this.state;
 
-            console.log(children);
+            console.log(colors);
 
             return (<div>
-                <ParseImageColorsController img={img} onImgLoad={this.onColorsParsed} />
+                <ParseImageColorsController
+                    img={img}
+                    onColorsParsed={this.onColorsParsed}
+                />
                 <WrappedComponent
                     {...this.props}
                 >
