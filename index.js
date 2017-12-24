@@ -1,29 +1,44 @@
 import React, { PureComponent } from 'react';
+import ParseImageColorsController from './src/ParseImageColorsController';
 
-import parseImageColors from './src/parseImageColors';
+import { getDisplayName } from './src/util';
 
 const ReactChameleon = WrappedComponent => {
-    return class extends PureComponent {
-        constructor(props) {
-            super(props);
+    class ReactChameleon extends PureComponent {
+        // constructor(...args) {
+        //     super(...args);
+        // }
 
-            const { img } = props;
-            const colors = parseImageColors(img);
+        onColorsParsed(colors) {
+            console.log(colors);
 
-            this.state = {
-                img,
+            this.setState({
                 colors
-            }
+            })
         }
+
         render() {
+            const {
+                img,
+                children
+            } = this.props;
+
+            console.log(children);
+
             return (<div>
-                <img src={this.state.img} />
+                <ParseImageColorsController img={img} onImgLoad={this.onColorsParsed} />
                 <WrappedComponent
                     {...this.props}
-                />
+                >
+                    {children}
+                </WrappedComponent>
             </div>);
         }
-    };
+    }
+
+    ReactChameleon.displayName = `ReactChameleon(${getDisplayName(WrappedComponent)})`;
+
+    return ReactChameleon;
 };
 
 export default ReactChameleon;
