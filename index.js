@@ -1,7 +1,7 @@
-import React, { PureComponent } from 'react';
+import React, {PureComponent} from 'react';
 import ParseImageColorsController from './src/ParseImageColorsController';
 
-import { getDisplayName } from './src/util';
+import {getDisplayName} from './src/util';
 
 const ReactChameleon = WrappedComponent => {
     class ReactChameleon extends PureComponent {
@@ -21,22 +21,20 @@ const ReactChameleon = WrappedComponent => {
 
         render() {
             const {
-                img,
                 children
             } = this.props;
             const {
                 colors
             } = this.state;
 
-            console.log(colors);
-
             return (<div>
                 <ParseImageColorsController
-                    img={img}
+                    {...this.props}
                     onColorsParsed={this.onColorsParsed}
                 />
                 <WrappedComponent
                     {...this.props}
+                    reactChameleonColors={colors}
                 >
                     {children}
                 </WrappedComponent>

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import Color from 'color';
 
@@ -23,7 +23,8 @@ class ParseImageColorsController extends PureComponent {
 
     static defaultProps = {
         img: '',
-        onColorsParsed: () => {},
+        onColorsParsed: () => {
+        },
         colorAlpha: COLOR_ALPHA,
         colorDifference: COLOR_DIFFERENCE,
         sortType: SORT_TYPE_MAIN
@@ -32,7 +33,7 @@ class ParseImageColorsController extends PureComponent {
     constructor(...args) {
         super(...args);
 
-        const { img } = this.props;
+        const {img} = this.props;
 
         this.state = {
             img
@@ -53,12 +54,20 @@ class ParseImageColorsController extends PureComponent {
         const rgbaKeyArr = [];
         const imgColors = [];
         const usedColors = [];
+        const red = 0, green = 1, blue = 2, alpha = 3, colorStep = 4;
 
-        for (let i = 0; i < dataLen; i += 4) {
-            const isAlphaOk = data[i + 3] > 0 && data[i + 3] >= colorAlpha * COLOR_VAL;
+        for (let i = 0; i < dataLen; i += colorStep) {
+            const isAlphaOk =
+                data[i + alpha] > 0
+                && data[i + alpha] >= colorAlpha * COLOR_VAL;
 
             if (isAlphaOk) {
-                const rgbaKey = [data[i], data[i + 1], data[i + 2], data[i + 3]].join(',');
+                const rgbaKey = [
+                    data[i + red],
+                    data[i + green],
+                    data[i + blue],
+                    data[i + alpha]
+                ].join(',');
 
                 if (rgbaKeyArr[rgbaKey]) {
                     rgbaKeyArr[rgbaKey] += 1
@@ -125,6 +134,7 @@ class ParseImageColorsController extends PureComponent {
                 {img && <img
                     src={img}
                     alt={'ParseImageColorsController img'}
+                    style={{display: 'none'}}
                     onLoad={this.onImgLoad}
                 />}
             </div>
