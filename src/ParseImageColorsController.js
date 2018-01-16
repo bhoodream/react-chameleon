@@ -7,6 +7,7 @@ import sortColors from './sortColors';
 
 import {
     COLOR_ALPHA,
+    COLOR_ALPHA_PRECISION,
     COLOR_DIFFERENCE,
     SORT_TYPE_MAIN,
     COLOR_VAL
@@ -51,62 +52,65 @@ class ParseImageColorsController extends PureComponent {
             onColorsParsed
         } = this.props;
         const dataLen = data.length;
+        const rgbaKeyArrMirror = {};
         const rgbaKeyArr = [];
         const imgColors = [];
         const usedColors = [];
         const red = 0, green = 1, blue = 2, alpha = 3, colorStep = 4;
 
         for (let i = 0; i < dataLen; i += colorStep) {
+            const dataAlpha = Math.round(
+                (data[i + alpha] / COLOR_VAL) * COLOR_ALPHA_PRECISION
+            ) / COLOR_ALPHA_PRECISION;
             const isAlphaOk =
-                data[i + alpha] > 0
-                && data[i + alpha] >= colorAlpha * COLOR_VAL;
+                dataAlpha > 0
+                && dataAlpha >= colorAlpha;
 
             if (isAlphaOk) {
                 const rgbaKey = [
                     data[i + red],
                     data[i + green],
                     data[i + blue],
-                    data[i + alpha]
+                    dataAlpha
                 ].join(',');
 
-                if (rgbaKeyArr[rgbaKey]) {
-                    rgbaKeyArr[rgbaKey] += 1
+                if (rgbaKeyArrMirror[rgbaKey]) {
+                    rgbaKeyArrMirror[rgbaKey].count += 1
                 } else {
-                    rgbaKeyArr[rgbaKey] = 1
+                    rgbaKeyArrMirror[rgbaKey] = { rgbaKey, count: 1 };
+                    rgbaKeyArr.push(rgbaKeyArrMirror[rgbaKey]);
                 }
             }
         }
 
         const sortedColors = sortColors(sortType, rgbaKeyArr);
 
-        for (let rgbaStr in sortedColors) {
-            if (sortedColors.hasOwnProperty(rgbaStr)) {
-                let rgbaArr = rgbaStr.split(',').map(Number),
-                    isValid = true;
+        sortedColors.forEach(colorItem => {
+            let rgbaArr = colorItem.rgbaKey.split(',').map(Number),
+                isValid = true;
 
-                for (let l = 0; l < usedColors.length; l += 1) {
-                    let colorDiff = 0,
-                        usedRgbaArr = usedColors[l].split(',');
+            for (let l = 0; l < usedColors.length; l += 1) {
+                let colorDiff = 0,
+                    usedRgbaArr = usedColors[l].split(',');
 
-                    for (let m = 0; m < 3; m += 1) {
-                        colorDiff += Math.abs(rgbaArr[m] - usedRgbaArr[m]);
-                    }
-
-                    if (colorDiff <= colorDifference) {
-                        isValid = false;
-
-                        break;
-                    }
+                for (let m = 0; m < 3; m += 1) {
+                    colorDiff += Math.abs(rgbaArr[m] - usedRgbaArr[m]);
                 }
 
-                if (isValid) {
-                    const color = Color.rgb(rgbaArr.slice(0, 3)).alpha(rgbaArr[3] / COLOR_VAL);
+                if (colorDiff <= colorDifference) {
+                    isValid = false;
 
-                    usedColors.push(rgbaStr);
-                    imgColors.push(color);
+                    break;
                 }
             }
-        }
+
+            if (isValid) {
+                const color = Color(rgbaArr);
+
+                usedColors.push(colorItem.rgbaKey);
+                imgColors.push(color);
+            }
+        });
 
         onColorsParsed(imgColors);
     }

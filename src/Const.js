@@ -1,6 +1,7 @@
 export const
     CANVAS_SIDE = 400,
     COLOR_ALPHA = 1,
+    COLOR_ALPHA_PRECISION = 100,
     COLOR_DIFFERENCE = 120,
-    COLOR_VAL = 250,
+    COLOR_VAL = 255,
     SORT_TYPE_MAIN = 'main';
