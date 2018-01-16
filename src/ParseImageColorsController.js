@@ -6,11 +6,13 @@ import CanvasController from './CanvasController';
 import sortColors from './sortColors';
 
 import {
-    COLOR_ALPHA,
+    COLOR_ALPHA_MAX,
     COLOR_ALPHA_PRECISION,
-    COLOR_DIFFERENCE,
-    SORT_TYPE_MAIN,
-    COLOR_VAL
+    COLOR_DIFFERENCE_DEFAULT,
+    SORT_TYPE_COUNT,
+    SORT_DIR_DESC,
+    COLOR_VAL_MAX,
+    CANVAS_SIDE_DEFAULT
 } from "./Const";
 
 class ParseImageColorsController extends PureComponent {
@@ -19,16 +21,18 @@ class ParseImageColorsController extends PureComponent {
         onColorsParsed: PropTypes.func,
         colorAlpha: PropTypes.number,
         colorDifference: PropTypes.number,
-        sortType: PropTypes.string
+        sortType: PropTypes.string,
+        maxImgSideSize: PropTypes.number
     };
 
     static defaultProps = {
         img: '',
-        onColorsParsed: () => {
-        },
-        colorAlpha: COLOR_ALPHA,
-        colorDifference: COLOR_DIFFERENCE,
-        sortType: SORT_TYPE_MAIN
+        onColorsParsed: () => {},
+        minColorAlpha: COLOR_ALPHA_MAX,
+        colorDifference: COLOR_DIFFERENCE_DEFAULT,
+        sortType: SORT_TYPE_COUNT,
+        sortDir: SORT_DIR_DESC,
+        maxImgSideSize: CANVAS_SIDE_DEFAULT
     };
 
     constructor(...args) {
@@ -46,9 +50,10 @@ class ParseImageColorsController extends PureComponent {
 
     parseColorsFromData(data = []) {
         const {
-            colorAlpha,
+            minColorAlpha,
             colorDifference,
             sortType,
+            sortDir,
             onColorsParsed
         } = this.props;
         const dataLen = data.length;
@@ -60,11 +65,11 @@ class ParseImageColorsController extends PureComponent {
 
         for (let i = 0; i < dataLen; i += colorStep) {
             const dataAlpha = Math.round(
-                (data[i + alpha] / COLOR_VAL) * COLOR_ALPHA_PRECISION
+                (data[i + alpha] / COLOR_VAL_MAX) * COLOR_ALPHA_PRECISION
             ) / COLOR_ALPHA_PRECISION;
             const isAlphaOk =
                 dataAlpha > 0
-                && dataAlpha >= colorAlpha;
+                && dataAlpha >= minColorAlpha;
 
             if (isAlphaOk) {
                 const rgbaKey = [
@@ -77,13 +82,17 @@ class ParseImageColorsController extends PureComponent {
                 if (rgbaKeyArrMirror[rgbaKey]) {
                     rgbaKeyArrMirror[rgbaKey].count += 1
                 } else {
-                    rgbaKeyArrMirror[rgbaKey] = { rgbaKey, count: 1 };
+                    rgbaKeyArrMirror[rgbaKey] = {
+                        rgbaKey,
+                        alpha: dataAlpha,
+                        count: 1
+                    };
                     rgbaKeyArr.push(rgbaKeyArrMirror[rgbaKey]);
                 }
             }
         }
 
-        const sortedColors = sortColors(sortType, rgbaKeyArr);
+        const sortedColors = sortColors({ sortType, sortDir }, rgbaKeyArr);
 
         sortedColors.forEach(colorItem => {
             let rgbaArr = colorItem.rgbaKey.split(',').map(Number),
@@ -125,6 +134,9 @@ class ParseImageColorsController extends PureComponent {
 
     render() {
         const {
+            maxImgSideSize
+        } = this.props;
+        const {
             img,
             imgElem
         } = this.state;
@@ -133,6 +145,7 @@ class ParseImageColorsController extends PureComponent {
             <div>
                 {imgElem && <CanvasController
                     imgElem={imgElem}
+                    sideSize={maxImgSideSize}
                     onImageData={this.parseColorsFromData}
                 />}
                 {img && <img

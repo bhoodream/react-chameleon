@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
-import { CANVAS_SIDE } from "./Const";
+import { CANVAS_SIDE_DEFAULT } from "./Const";
 
 class CanvasController extends PureComponent {
     static propTypes = {
@@ -11,7 +11,7 @@ class CanvasController extends PureComponent {
     };
 
     static defaultProps = {
-        sideSize: CANVAS_SIDE,
+        sideSize: CANVAS_SIDE_DEFAULT,
         imgElem: null,
         onImageData: () => {}
     };
@@ -20,7 +20,7 @@ class CanvasController extends PureComponent {
         this.getImageData();
     }
 
-    getCanvasSideSizes({ width, height }) {
+    getCanvasSideSizes({ width = 0, height = 0 }) {
         const { sideSize } = this.props;
         const widthIsBigger = width > height;
 
@@ -55,6 +55,7 @@ class CanvasController extends PureComponent {
 
     render() {
         return <canvas
+            style={{display: 'none'}}
             ref={canvas => this.canvas = canvas}
         />;
     }

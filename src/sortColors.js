@@ -1,13 +1,26 @@
-import { SORT_TYPE_MAIN } from "./Const";
+import {
+    SORT_TYPE_COUNT,
+    SORT_TYPE_ALPHA,
+    SORT_DIR_DESC
+} from "./Const";
 
-export default function (sortType, colors) {
-    switch (sortType) {
-        case SORT_TYPE_MAIN:
-            return colors.sort((a, b) =>  b.count - a.count);
+const allowSortTypes = [
+    SORT_TYPE_COUNT,
+    SORT_TYPE_ALPHA
+];
 
-        default:
-            console.warn('Unknown sort type!', sortType, colors);
+export default function ({ sortType, sortDir }, colors) {
+    if (allowSortTypes.indexOf(sortType) === -1) {
+        console.warn('Unknown sort type!', sortType, colors);
+
+        return colors;
     }
 
-    return colors;
+    const sortByType = type => (a, b) =>  sortDir === SORT_DIR_DESC ?
+        b[type] - a[type] :
+        a[type] - b[type];
+
+    console.log(colors);
+
+    return colors.sort(sortByType(sortType));
 }
