@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react';
-import ParseImageColorsController from './src/ParseImageColorsController';
+import Color from 'color';
+import ImageParser from '../react-image-parser';
 
 import {getDisplayName} from './src/util';
 
@@ -14,9 +15,11 @@ const ReactChameleon = WrappedComponent => {
         }
 
         onColorsParsed(colors) {
+            const colorItems = colors.map(c => new Color(c));
+
             this.setState({
-                colors
-            })
+                colorItems
+            });
         }
 
         render() {
@@ -24,17 +27,17 @@ const ReactChameleon = WrappedComponent => {
                 children
             } = this.props;
             const {
-                colors
+                colorItems
             } = this.state;
 
             return (<div>
-                <ParseImageColorsController
+                <ImageParser
                     {...this.props}
                     onColorsParsed={this.onColorsParsed}
                 />
                 <WrappedComponent
                     {...this.props}
-                    reactChameleonColors={colors}
+                    reactChameleonColors={colorItems}
                 >
                     {children}
                 </WrappedComponent>
