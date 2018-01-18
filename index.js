@@ -11,10 +11,10 @@ const ReactChameleon = WrappedComponent => {
         constructor(...args) {
             super(...args);
 
-            this.onImageParsed = this.onImageParsed.bind(this);
+            this.onColorsParsed = this.onColorsParsed.bind(this);
         }
 
-        onImageParsed({ colors }) {
+        onColorsParsed(colors) {
             this.setState({
                 colors: colors.map(c => new Color(c))
             });
@@ -31,7 +31,7 @@ const ReactChameleon = WrappedComponent => {
             return (<div>
                 <ImageParser
                     {...this.props}
-                    onImageParsed={this.onImageParsed}
+                    onColorsParsed={this.onColorsParsed}
                 />
                 <WrappedComponent
                     {...this.props}
