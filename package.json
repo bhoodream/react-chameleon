@@ -23,6 +23,6 @@
   },
   "dependencies": {
     "color": "^2.0.1",
-    "react-image-parser": "0.0.5"
+    "react-image-parser": ">0.0.9"
   }
 }
