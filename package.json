@@ -22,6 +22,7 @@
     "react": ">15.0.1"
   },
   "dependencies": {
-    "color": "^2.0.1"
+    "color": "^2.0.1",
+    "react-image-parser": "0.0.5"
   }
 }
