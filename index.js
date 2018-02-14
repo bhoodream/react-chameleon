@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import Color from 'color';
-import ImageParser from 'react-image-parser';
+import ImageParser from '../react-image-parser';
 
 import {getDisplayName} from './src/util';
 
