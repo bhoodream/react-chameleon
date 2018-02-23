@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import Color from 'color';
-import ImageParser from '../react-image-parser';
+import ImageParser from 'react-image-parser';
 
 import parseColorsFromData from './src/parseColorsFromData';
 import { getDisplayName } from './src/util';
@@ -11,19 +11,16 @@ const ReactChameleon = WrappedComponent => {
 
         constructor(...args) {
             super(...args);
-
-            this.onImageParsed = this.onImageParsed.bind(this);
-            this.onColorsParsed = this.onColorsParsed.bind(this);
         }
 
-        onImageParsed(data) {
+        onImageParsed = data => {
             parseColorsFromData({
                 ...this.props,
                 onColorsParsed: this.onColorsParsed
             }, data);
-        }
+        };
 
-        onColorsParsed(colors) {
+        onColorsParsed = colors => {
             this.setState({
                 colors: colors.map(c => {
                     return {
@@ -32,7 +29,7 @@ const ReactChameleon = WrappedComponent => {
                     }
                 })
             });
-        }
+        };
 
         render() {
             const {
