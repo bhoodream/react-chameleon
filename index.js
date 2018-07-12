@@ -9,10 +9,6 @@ const ReactChameleon = WrappedComponent => {
     class ReactChameleon extends PureComponent {
         state = {};
 
-        constructor(...args) {
-            super(...args);
-        }
-
         onImageParsed = data => {
             parseColorsFromData({
                 ...this.props,

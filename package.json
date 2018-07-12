@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "color": "^2.0.1",
-    "react-image-parser": "^1.0.2"
+    "prop-types": "^15.5.8",
+    "react-image-parser": "^1.1.6"
   }
 }
