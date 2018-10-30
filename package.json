@@ -1,6 +1,6 @@
 {
   "name": "react-chameleon",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Chameleon.js on React",
   "main": "dist/index.js",
   "scripts": {
