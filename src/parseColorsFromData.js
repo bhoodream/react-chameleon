@@ -1,4 +1,5 @@
 import sortColors from "./sortColors";
+import { getColorObjFromRGBAString } from './utils';
 import { COLOR_VAL_MAX } from "./Const";
 
 function getColorAlpha(data, index, precision) {
@@ -7,22 +8,15 @@ function getColorAlpha(data, index, precision) {
     return Math.round((data[index + alpha] / COLOR_VAL_MAX) * precision) / precision;
 }
 
-function getRgbaKey(data, index, alpha) {
+function getRgba(data, index, alpha) {
     const red = 0, green = 1, blue = 2;
 
-    return [data[index + red], data[index + green], data[index + blue], alpha].join(',');
-}
-
-function getColorObj(colorsArr, rgbaKey, alpha) {
-    let color = colorsArr[rgbaKey];
-
-    if (color) {
-        color.count += 1;
-
-        return color;
-    }
-
-    return { rgbaKey, alpha, count: 1 };
+    return [
+        data[index + red],
+        data[index + green],
+        data[index + blue],
+        alpha
+    ];
 }
 
 export default (props, data = []) => {
@@ -47,11 +41,13 @@ export default (props, data = []) => {
             continue;
         }
 
-        const rgbaKey = getRgbaKey(data, i, colorAlpha);
+        const rgba = getRgba(data, i, colorAlpha);
+        const rgbaKey = rgba.join(',');
 
-        rgbaKeyArrMirror[rgbaKey] = getColorObj(rgbaKeyArrMirror, rgbaKey, colorAlpha);
-
-        if (rgbaKeyArrMirror[rgbaKey].count === 1) {
+        if (rgbaKeyArrMirror[rgbaKey]) {
+            rgbaKeyArrMirror[rgbaKey].count += 1;
+        } else {
+            rgbaKeyArrMirror[rgbaKey] = getColorObjFromRGBAString(rgbaKey, colorAlpha);
             rgbaKeyArr.push(rgbaKeyArrMirror[rgbaKey]);
         }
     }
@@ -61,12 +57,12 @@ export default (props, data = []) => {
     const usedColors = [];
 
     sortedColors.forEach(colorItem => {
-        let rgbaArr = colorItem.rgbaKey.split(',').map(Number),
+        let rgbaArr = [colorItem.r, colorItem.g, colorItem.b, colorItem.alpha],
             isValid = true;
 
         for (let l = 0; l < usedColors.length; l += 1) {
             let colorDiff = 0,
-                usedRgbaArr = usedColors[l].split(',');
+                usedRgbaArr = usedColors[l];
 
             for (let m = 0; m < 3; m += 1) {
                 colorDiff += Math.abs(rgbaArr[m] - usedRgbaArr[m]);
@@ -80,7 +76,7 @@ export default (props, data = []) => {
         }
 
         if (isValid) {
-            usedColors.push(colorItem.rgbaKey);
+            usedColors.push(rgbaArr);
             colors.push(colorItem);
         }
     });

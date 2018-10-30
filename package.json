@@ -2,8 +2,10 @@
   "name": "react-chameleon",
   "version": "0.0.1",
   "description": "Chameleon.js on React",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "dev": "watch 'npm run build' src",
+    "build": "node ./preBuild.js && babel src -d dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,12 +20,18 @@
   "author": "Vadim Fedorov",
   "license": "ISC",
   "peerDependencies": {
-    "react-dom": ">15.0.1",
-    "react": ">15.0.1"
+    "react-dom": ">16.0.1",
+    "react": ">16.0.1"
   },
   "dependencies": {
-    "color": "^2.0.1",
-    "prop-types": "^15.5.8",
-    "react-image-parser": "^1.1.6"
+    "react-image-parser": "^1.2.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "rimraf": "^2.6.2"
   }
 }

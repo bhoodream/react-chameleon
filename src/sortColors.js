@@ -16,9 +16,9 @@ export default function ({ sortType, sortDir }, colors) {
         return colors;
     }
 
-    const sortByType = type => (a, b) =>  sortDir === SORT_DIR_DESC ?
+    const getSortByType = type => (a, b) =>  sortDir === SORT_DIR_DESC ?
         b[type] - a[type] :
         a[type] - b[type];
 
-    return colors.sort(sortByType(sortType));
+    return colors.sort(getSortByType(sortType));
 }
