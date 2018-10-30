@@ -74,8 +74,6 @@ var ReactChameleon = function ReactChameleon(WrappedComponent) {
                         backColor = _chmlnColors2[0],
                         frontColors = _chmlnColors2.slice(1);
 
-                    console.log(chmlnColors);
-
                     chmlnColors = [backColor].concat(_toConsumableArray(frontColors.map(function (c) {
                         return (0, _adaptFrontColorToBackColor2.default)(backColor, c);
                     })));

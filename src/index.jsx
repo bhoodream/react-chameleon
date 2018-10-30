@@ -35,8 +35,6 @@ const ReactChameleon = WrappedComponent => {
             if (this.props.adaptFrontColorsToBack) {
                 const [backColor, ...frontColors] = chmlnColors;
 
-                console.log(chmlnColors);
-
                 chmlnColors = [
                     backColor,
                     ...frontColors.map(c => adaptFrontColorToBackColor(backColor, c))
