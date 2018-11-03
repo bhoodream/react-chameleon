@@ -50,7 +50,7 @@ ReactDOM.render(
 
 | Name        | Type           | Required  |  Default |  Description |
 |:------------|:---------------|:----------|:---------|:-------------|
-| img        | String | Yes  |  null |  Path to image. For example, './my/image/path.png' |
+| img        | String | Yes  |  null |  Path to image. For example, './my/image/path.png'. |
 | adaptFrontColorsToBack | Boolean | No  |  false | Adapt the colors to the background color. The background color will be the first color after sorting, the other colors will adapt to it. |
 | sortType | String | No  |  'count' | What color characteristic will be used for sorting. Allowed values: "count", "alpha". |
 | sortDir | String | No  |  'desc' | Sorting direction. Allowed values: "desc", "asc". |
@@ -61,4 +61,4 @@ ReactDOM.render(
 
 #### Demo:
 
-For more information and examples check the [demo page](https://vadimfedorov.ru/lab/chameleon-js/react).
+For more information and examples check the [demo page](https://vadimfedorov.ru/lab/chameleon-js/react/).

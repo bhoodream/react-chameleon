@@ -21,10 +21,11 @@
   "license": "ISC",
   "peerDependencies": {
     "react-dom": ">16.0.1",
-    "react": ">16.0.1"
+    "react": ">16.0.1",
+    "prop-types": "^15.6.2"
   },
   "dependencies": {
-    "react-image-parser": "^1.2.1"
+    "react-image-parser": "^2.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

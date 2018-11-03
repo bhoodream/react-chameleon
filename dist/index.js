@@ -59,7 +59,9 @@ var ReactChameleon = function ReactChameleon(WrappedComponent) {
 
             var _this = _possibleConstructorReturn(this, (_ref = ReactChameleon.__proto__ || Object.getPrototypeOf(ReactChameleon)).call.apply(_ref, [this].concat(args)));
 
-            _this.onImageParsed = function (data) {
+            _this.onImageParsed = function (_ref2) {
+                var data = _ref2.data;
+
                 (0, _parseColorsFromData2.default)(_extends({}, _this.props, {
                     onColorsParsed: _this.onColorsParsed
                 }), data);

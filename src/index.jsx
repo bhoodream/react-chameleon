@@ -21,7 +21,7 @@ const ReactChameleon = WrappedComponent => {
             this.state = {};
         }
 
-        onImageParsed = data => {
+        onImageParsed = ({ data }) => {
             parseColorsFromData({
                 ...this.props,
                 onColorsParsed: this.onColorsParsed
