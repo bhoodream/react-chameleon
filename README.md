@@ -51,6 +51,7 @@ ReactDOM.render(
 | Name        | Type           | Required  |  Default |  Description |
 |:------------|:---------------|:----------|:---------|:-------------|
 | img        | String | Yes  |  null |  Path to image. For example, './my/image/path.png'. |
+| colorsCacheLimit        | Number | No |  100 |  In order not to do the same thing several times (image analysis), we cache the resulting colors for the images. Enter the number of entries in the cache here. The uniqueness of the set is determined by the settings. |
 | adaptFrontColorsToBack | Boolean | No  |  false | Adapt the colors to the background color. The background color will be the first color after sorting, the other colors will adapt to it. |
 | sortType | String | No  |  'count' | What color characteristic will be used for sorting. Allowed values: "count", "alpha". |
 | sortDir | String | No  |  'desc' | Sorting direction. Allowed values: "desc", "asc". |
