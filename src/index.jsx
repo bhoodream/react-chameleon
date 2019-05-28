@@ -13,12 +13,42 @@ import {
     COLOR_DIFFERENCE_DEFAULT
 } from './Const';
 
+const cachedImagesColors = [];
+
+const COLORS_CACHE_LIMIT = 100;
+
+const getColorsCacheKey = (props) => {
+    const { img, colorDifference, adaptFrontColorsToBack, colorsCount } = props;
+
+    return `${img}${colorDifference}${adaptFrontColorsToBack}${colorsCount}`;
+};
+
+const getCachedColors = cacheKey => {
+    const { colors } = cachedImagesColors.filter(i => i.cacheKey === cacheKey)[0] || {};
+
+    return colors;
+};
+
 const ReactChameleon = WrappedComponent => {
     class ReactChameleon extends PureComponent {
         constructor(...args) {
             super(...args);
 
             this.state = {};
+        }
+
+        cacheColors(colors) {
+            const cacheKey = getColorsCacheKey(this.props);
+
+            if (getCachedColors(cacheKey)) {
+                return;
+            }
+
+            if (cachedImagesColors.length > this.props.colorsCacheLimit) {
+                cachedImagesColors.shift();
+            }
+
+            cachedImagesColors.push({ cacheKey, colors })
         }
 
         onImageParsed = ({ data }) => {
@@ -41,6 +71,8 @@ const ReactChameleon = WrappedComponent => {
                 ];
             }
 
+            this.cacheColors(chmlnColors);
+
             this.setState({
                 colors: chmlnColors
             });
@@ -51,14 +83,14 @@ const ReactChameleon = WrappedComponent => {
                 children
             } = this.props;
             const {
-                colors
+                colors = getCachedColors(getColorsCacheKey(this.props))
             } = this.state;
 
             return (<div>
-                <ImageParser
+                {!colors && <ImageParser
                     {...this.props}
                     onImageParsed={this.onImageParsed}
-                />
+                />}
                 <WrappedComponent
                     {...this.props}
                     reactChameleonColors={colors}
@@ -72,6 +104,7 @@ const ReactChameleon = WrappedComponent => {
     ReactChameleon.displayName = `ReactChameleon(${getDisplayName(WrappedComponent)})`;
     ReactChameleon.propTypes = {
         img: pt.string.isRequired,
+        colorsCacheLimit: pt.number,
         sortType: pt.string,
         sortDir: pt.string,
         minColorAlpha: pt.number,
@@ -81,6 +114,7 @@ const ReactChameleon = WrappedComponent => {
         colorsCount: pt.number
     };
     ReactChameleon.defaultProps = {
+        colorsCacheLimit: COLORS_CACHE_LIMIT,
         sortType: SORT_TYPE_COUNT,
         sortDir: SORT_DIR_DESC,
         minColorAlpha: 0,

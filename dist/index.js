@@ -44,12 +44,35 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var cachedImagesColors = [];
+
+var COLORS_CACHE_LIMIT = 100;
+
+var getColorsCacheKey = function getColorsCacheKey(props) {
+    var img = props.img,
+        colorDifference = props.colorDifference,
+        adaptFrontColorsToBack = props.adaptFrontColorsToBack,
+        colorsCount = props.colorsCount;
+
+
+    return '' + img + colorDifference + adaptFrontColorsToBack + colorsCount;
+};
+
+var getCachedColors = function getCachedColors(cacheKey) {
+    var _ref = cachedImagesColors.filter(function (i) {
+        return i.cacheKey === cacheKey;
+    })[0] || {},
+        colors = _ref.colors;
+
+    return colors;
+};
+
 var ReactChameleon = function ReactChameleon(WrappedComponent) {
     var ReactChameleon = function (_PureComponent) {
         _inherits(ReactChameleon, _PureComponent);
 
         function ReactChameleon() {
-            var _ref;
+            var _ref2;
 
             _classCallCheck(this, ReactChameleon);
 
@@ -57,10 +80,10 @@ var ReactChameleon = function ReactChameleon(WrappedComponent) {
                 args[_key] = arguments[_key];
             }
 
-            var _this = _possibleConstructorReturn(this, (_ref = ReactChameleon.__proto__ || Object.getPrototypeOf(ReactChameleon)).call.apply(_ref, [this].concat(args)));
+            var _this = _possibleConstructorReturn(this, (_ref2 = ReactChameleon.__proto__ || Object.getPrototypeOf(ReactChameleon)).call.apply(_ref2, [this].concat(args)));
 
-            _this.onImageParsed = function (_ref2) {
-                var data = _ref2.data;
+            _this.onImageParsed = function (_ref3) {
+                var data = _ref3.data;
 
                 (0, _parseColorsFromData2.default)(_extends({}, _this.props, {
                     onColorsParsed: _this.onColorsParsed
@@ -81,6 +104,8 @@ var ReactChameleon = function ReactChameleon(WrappedComponent) {
                     })));
                 }
 
+                _this.cacheColors(chmlnColors);
+
                 _this.setState({
                     colors: chmlnColors
                 });
@@ -91,16 +116,32 @@ var ReactChameleon = function ReactChameleon(WrappedComponent) {
         }
 
         _createClass(ReactChameleon, [{
+            key: 'cacheColors',
+            value: function cacheColors(colors) {
+                var cacheKey = getColorsCacheKey(this.props);
+
+                if (getCachedColors(cacheKey)) {
+                    return;
+                }
+
+                if (cachedImagesColors.length > this.props.colorsCacheLimit) {
+                    cachedImagesColors.shift();
+                }
+
+                cachedImagesColors.push({ cacheKey: cacheKey, colors: colors });
+            }
+        }, {
             key: 'render',
             value: function render() {
                 var children = this.props.children;
-                var colors = this.state.colors;
+                var _state$colors = this.state.colors,
+                    colors = _state$colors === undefined ? getCachedColors(getColorsCacheKey(this.props)) : _state$colors;
 
 
                 return _react2.default.createElement(
                     'div',
                     null,
-                    _react2.default.createElement(_reactImageParser2.default, _extends({}, this.props, {
+                    !colors && _react2.default.createElement(_reactImageParser2.default, _extends({}, this.props, {
                         onImageParsed: this.onImageParsed
                     })),
                     _react2.default.createElement(
@@ -120,6 +161,7 @@ var ReactChameleon = function ReactChameleon(WrappedComponent) {
     ReactChameleon.displayName = 'ReactChameleon(' + (0, _utils.getDisplayName)(WrappedComponent) + ')';
     ReactChameleon.propTypes = {
         img: _propTypes2.default.string.isRequired,
+        colorsCacheLimit: _propTypes2.default.number,
         sortType: _propTypes2.default.string,
         sortDir: _propTypes2.default.string,
         minColorAlpha: _propTypes2.default.number,
@@ -129,6 +171,7 @@ var ReactChameleon = function ReactChameleon(WrappedComponent) {
         colorsCount: _propTypes2.default.number
     };
     ReactChameleon.defaultProps = {
+        colorsCacheLimit: COLORS_CACHE_LIMIT,
         sortType: _Const.SORT_TYPE_COUNT,
         sortDir: _Const.SORT_DIR_DESC,
         minColorAlpha: 0,
