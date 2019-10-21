@@ -1,186 +1,147 @@
-'use strict';
+"use strict";
+
+require("core-js/modules/web.dom-collections.iterator");
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
+exports.default = void 0;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _react = _interopRequireWildcard(require("react"));
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _propTypes = _interopRequireDefault(require("prop-types"));
 
-var _react = require('react');
+var _reactImageParser = _interopRequireDefault(require("react-image-parser"));
 
-var _react2 = _interopRequireDefault(_react);
+var _parseColorsFromData = _interopRequireDefault(require("./parseColorsFromData"));
 
-var _propTypes = require('prop-types');
+var _adaptFrontColorToBackColor = _interopRequireDefault(require("./adaptFrontColorToBackColor"));
 
-var _propTypes2 = _interopRequireDefault(_propTypes);
+var _utils = require("./utils");
 
-var _reactImageParser = require('react-image-parser');
-
-var _reactImageParser2 = _interopRequireDefault(_reactImageParser);
-
-var _parseColorsFromData = require('./parseColorsFromData');
-
-var _parseColorsFromData2 = _interopRequireDefault(_parseColorsFromData);
-
-var _adaptFrontColorToBackColor = require('./adaptFrontColorToBackColor');
-
-var _adaptFrontColorToBackColor2 = _interopRequireDefault(_adaptFrontColorToBackColor);
-
-var _utils = require('./utils');
-
-var _Const = require('./Const');
+var _Const = require("./Const");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; if (obj != null) { var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-var cachedImagesColors = [];
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var COLORS_CACHE_LIMIT = 100;
+const cachedImagesColors = [];
+const COLORS_CACHE_LIMIT = 100;
 
-var getColorsCacheKey = function getColorsCacheKey(props) {
-    var img = props.img,
-        colorDifference = props.colorDifference,
-        adaptFrontColorsToBack = props.adaptFrontColorsToBack,
-        colorsCount = props.colorsCount;
-
-
-    return '' + img + colorDifference + adaptFrontColorsToBack + colorsCount;
+const getColorsCacheKey = props => {
+  const {
+    img,
+    colorDifference,
+    adaptFrontColorsToBack,
+    colorsCount
+  } = props;
+  return "".concat(img).concat(colorDifference).concat(adaptFrontColorsToBack).concat(colorsCount);
 };
 
-var getCachedColors = function getCachedColors(cacheKey) {
-    var _ref = cachedImagesColors.filter(function (i) {
-        return i.cacheKey === cacheKey;
-    })[0] || {},
-        colors = _ref.colors;
-
-    return colors;
+const getCachedColors = cacheKey => {
+  const {
+    colors
+  } = cachedImagesColors.filter(i => i.cacheKey === cacheKey)[0] || {};
+  return colors;
 };
 
-var ReactChameleon = function ReactChameleon(WrappedComponent) {
-    var ReactChameleon = function (_PureComponent) {
-        _inherits(ReactChameleon, _PureComponent);
+const ReactChameleon = WrappedComponent => {
+  class ReactChameleon extends _react.PureComponent {
+    constructor() {
+      super(...arguments);
 
-        function ReactChameleon() {
-            var _ref2;
+      _defineProperty(this, "onImageParsed", (_ref) => {
+        let {
+          data
+        } = _ref;
+        (0, _parseColorsFromData.default)(_objectSpread({}, this.props, {
+          onColorsParsed: this.onColorsParsed
+        }), data);
+      });
 
-            _classCallCheck(this, ReactChameleon);
+      _defineProperty(this, "onColorsParsed", colors => {
+        let chmlnColors = colors.slice(...(typeof this.props.colorsCount === 'number' ? [0, this.props.colorsCount] : [0]));
 
-            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-                args[_key] = arguments[_key];
-            }
-
-            var _this = _possibleConstructorReturn(this, (_ref2 = ReactChameleon.__proto__ || Object.getPrototypeOf(ReactChameleon)).call.apply(_ref2, [this].concat(args)));
-
-            _this.onImageParsed = function (_ref3) {
-                var data = _ref3.data;
-
-                (0, _parseColorsFromData2.default)(_extends({}, _this.props, {
-                    onColorsParsed: _this.onColorsParsed
-                }), data);
-            };
-
-            _this.onColorsParsed = function (colors) {
-                var chmlnColors = colors.slice.apply(colors, _toConsumableArray(typeof _this.props.colorsCount === 'number' ? [0, _this.props.colorsCount] : [0]));
-
-                if (_this.props.adaptFrontColorsToBack) {
-                    var _chmlnColors = chmlnColors,
-                        _chmlnColors2 = _toArray(_chmlnColors),
-                        backColor = _chmlnColors2[0],
-                        frontColors = _chmlnColors2.slice(1);
-
-                    chmlnColors = [backColor].concat(_toConsumableArray(frontColors.map(function (c) {
-                        return (0, _adaptFrontColorToBackColor2.default)(backColor, c);
-                    })));
-                }
-
-                _this.cacheColors(chmlnColors);
-
-                _this.setState({
-                    colors: chmlnColors
-                });
-            };
-
-            _this.state = {};
-            return _this;
+        if (this.props.adaptFrontColorsToBack) {
+          const [backColor, ...frontColors] = chmlnColors;
+          chmlnColors = [backColor, ...frontColors.map(c => (0, _adaptFrontColorToBackColor.default)(backColor, c))];
         }
 
-        _createClass(ReactChameleon, [{
-            key: 'cacheColors',
-            value: function cacheColors(colors) {
-                var cacheKey = getColorsCacheKey(this.props);
+        this.cacheColors(chmlnColors);
+        this.setState({
+          colors: chmlnColors
+        });
+      });
 
-                if (getCachedColors(cacheKey)) {
-                    return;
-                }
+      this.state = {};
+    }
 
-                if (cachedImagesColors.length > this.props.colorsCacheLimit) {
-                    cachedImagesColors.shift();
-                }
+    cacheColors(colors) {
+      const cacheKey = getColorsCacheKey(this.props);
 
-                cachedImagesColors.push({ cacheKey: cacheKey, colors: colors });
-            }
-        }, {
-            key: 'render',
-            value: function render() {
-                var children = this.props.children;
-                var _state$colors = this.state.colors,
-                    colors = _state$colors === undefined ? getCachedColors(getColorsCacheKey(this.props)) : _state$colors;
+      if (getCachedColors(cacheKey)) {
+        return;
+      }
 
+      if (cachedImagesColors.length > this.props.colorsCacheLimit) {
+        cachedImagesColors.shift();
+      }
 
-                return _react2.default.createElement(
-                    'div',
-                    null,
-                    !colors && _react2.default.createElement(_reactImageParser2.default, _extends({}, this.props, {
-                        onImageParsed: this.onImageParsed
-                    })),
-                    _react2.default.createElement(
-                        WrappedComponent,
-                        _extends({}, this.props, {
-                            reactChameleonColors: colors
-                        }),
-                        children
-                    )
-                );
-            }
-        }]);
+      cachedImagesColors.push({
+        cacheKey,
+        colors
+      });
+    }
 
-        return ReactChameleon;
-    }(_react.PureComponent);
+    render() {
+      const {
+        children
+      } = this.props;
+      const {
+        colors = getCachedColors(getColorsCacheKey(this.props))
+      } = this.state;
+      return _react.default.createElement("div", null, !colors && _react.default.createElement(_reactImageParser.default, _extends({}, this.props, {
+        onImageParsed: this.onImageParsed
+      })), _react.default.createElement(WrappedComponent, _extends({}, this.props, {
+        reactChameleonColors: colors
+      }), children));
+    }
 
-    ReactChameleon.displayName = 'ReactChameleon(' + (0, _utils.getDisplayName)(WrappedComponent) + ')';
-    ReactChameleon.propTypes = {
-        img: _propTypes2.default.string.isRequired,
-        colorsCacheLimit: _propTypes2.default.number,
-        sortType: _propTypes2.default.string,
-        sortDir: _propTypes2.default.string,
-        minColorAlpha: _propTypes2.default.number,
-        colorAlphaPrecision: _propTypes2.default.number,
-        colorDifference: _propTypes2.default.number,
-        adaptFrontColorsToBack: _propTypes2.default.bool,
-        colorsCount: _propTypes2.default.number
-    };
-    ReactChameleon.defaultProps = {
-        colorsCacheLimit: COLORS_CACHE_LIMIT,
-        sortType: _Const.SORT_TYPE_COUNT,
-        sortDir: _Const.SORT_DIR_DESC,
-        minColorAlpha: 0,
-        colorAlphaPrecision: _Const.COLOR_ALPHA_PRECISION,
-        colorDifference: _Const.COLOR_DIFFERENCE_DEFAULT,
-        adaptFrontColorsToBack: false
-    };
+  }
 
-    return ReactChameleon;
+  ReactChameleon.displayName = "ReactChameleon(".concat((0, _utils.getDisplayName)(WrappedComponent), ")");
+  ReactChameleon.propTypes = {
+    img: _propTypes.default.string.isRequired,
+    colorsCacheLimit: _propTypes.default.number,
+    sortType: _propTypes.default.string,
+    sortDir: _propTypes.default.string,
+    minColorAlpha: _propTypes.default.number,
+    colorAlphaPrecision: _propTypes.default.number,
+    colorDifference: _propTypes.default.number,
+    adaptFrontColorsToBack: _propTypes.default.bool,
+    colorsCount: _propTypes.default.number
+  };
+  ReactChameleon.defaultProps = {
+    colorsCacheLimit: COLORS_CACHE_LIMIT,
+    sortType: _Const.SORT_TYPE_COUNT,
+    sortDir: _Const.SORT_DIR_DESC,
+    minColorAlpha: 0,
+    colorAlphaPrecision: _Const.COLOR_ALPHA_PRECISION,
+    colorDifference: _Const.COLOR_DIFFERENCE_DEFAULT,
+    adaptFrontColorsToBack: false
+  };
+  return ReactChameleon;
 };
 
-exports.default = ReactChameleon;
+var _default = ReactChameleon;
+exports.default = _default;
